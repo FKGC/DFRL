@@ -36,7 +36,7 @@ python trainer.py --weight_decay 0.0 --prefix nell.5shot
 #### Wiki
 
 ```
-python trainer.py --dataset wiki --embed_dim 50 --BiLSTM_hidden_size 50 --BiLSTM_input_size 50 --num_transformer_layers 4 --num_transformer_heads 8 --dropout_input 0.3 --dropout_layers 0.2 --lr 6e-5 --prefix wiki.5shot
+python trainer.py --dataset wiki --embed_dim 50 --BiLSTM_hidden_size 50 --BiLSTM_input_size 50 --dropout_input 0.3 --dropout_layers 0.2 --lr 6e-5 --prefix wiki.5shot
 ```
 
 To test the trained models, pls run as follows:
@@ -50,6 +50,6 @@ python trainer.py --weight_decay 0.0 --prefix nell.5shot_best --test
 #### Wiki
 
 ```
-python trainer.py --dataset wiki --embed_dim 50  --BiLSTM_hidden_size 50 --BiLSTM_input_size 50 --num_transformer_layers 4 --num_transformer_heads 8 --dropout_input 0.3 --dropout_layers 0.2 --lr 6e-5 --prefix wiki.5shot --test
+python trainer.py --dataset wiki --embed_dim 50  --BiLSTM_hidden_size 50 --BiLSTM_input_size 50 --dropout_input 0.3 --dropout_layers 0.2 --lr 6e-5 --prefix wiki.5shot --test
 ```
 
