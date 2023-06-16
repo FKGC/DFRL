@@ -62,20 +62,19 @@ class EntityEncoder(nn.Module):
         :param head_right:
         :return:
         """
-        #connection_left (5,10,10,2)第一个10：10个不同相邻关系的id，第二个10：每个相邻关系最多有10个不同的尾实体，最后的2：关系和尾部实体的id
-        #head_left(5,100)
-        # 可在本处进行修改，对相同相邻关系的尾实体求均值
+        #connection_left (5,10,10,2)
+        #head_left (5,100)
+        
         relations_left = connections_left[:, :,:, 0].squeeze(-1)#(5,10,10)
         entities_left = connections_left[:, :,:, 1].squeeze(-1)#(5,10,10)
         rel_embeds_left = self.dropout(self.symbol_emb(relations_left))  # [b, max, dim]#(5,10,10,100)
         ent_embeds_left = self.dropout(self.symbol_emb(entities_left))#(5,10,10,100)
 
-        rel_embeds_left = torch.mean(rel_embeds_left, dim=2)#(5,10,100) 给头实体相邻的十个关系一个表示方式
-        ent_embeds_left = torch.mean(ent_embeds_left, dim=2)#(5,10,100) 给头实体相邻的尾实体一个表示方式
+        rel_embeds_left = torch.mean(rel_embeds_left, dim=2)#(5,10,100), the representation of neighbor relations
+        ent_embeds_left = torch.mean(ent_embeds_left, dim=2)#(5,10,100), the representation of the one-hop neighbors from the perspective of the head entity.
         # rel_embeds_left = F.normalize(rel_embeds_left, dim=2)
         # ent_embeds_left = F.normalize(ent_embeds_left, dim=2)
 
-        # # 以下是新加内容
         # for rel_left in range(relations_left.shape[0]):
         #     rel_left_set_ = [relations_left[rel_left][x].item() for x in range(relations_left[rel_left].shape[0])]
         #     rel_left_set = []
@@ -114,7 +113,6 @@ class EntityEncoder(nn.Module):
         # rel_embeds_right = F.normalize(rel_embeds_right, dim=2)
         # ent_embeds_right = F.normalize(ent_embeds_right, dim=2)
 
-        # # 以下是新加内容
         # for rel_right in range(relations_right.shape[0]):
         #     rel_right_set_ = [relations_right[rel_right][x].item() for x in range(relations_left[rel_right].shape[0])]
         #     rel_right_set = []
@@ -174,7 +172,7 @@ class EntityEncoder(nn.Module):
             entity_right = entity_right.squeeze(1)
             en_h = None
 
-        return en_h, entity_left, entity_right #en_h(5,600) 都是(5,600)从头实体视角看三元组的标识 从尾实体视角看三元组标识
+        return en_h, entity_left, entity_right #en_h(5,600) 
 
 
 class RelationRepresentation(nn.Module):
@@ -280,7 +278,6 @@ class SupConLoss(nn.Module):
             0
         )
         mask = mask * logits_mask
-        # mask 此处为 4096 * 4096 的矩阵， 矩阵的非零值，为对比损失的分子
 
         # compute log_prob
 
@@ -349,9 +346,9 @@ class Matcher(nn.Module): #改了
         :return:
         """
         if not isEval:
-            support_r = self.EntityEncoder(support, support_meta) #support_r[0]--[2]都是(5,600)
-            query_r = self.EntityEncoder(query, query_meta)#support_r[0]--[2]都是(128,600)
-            false_r = self.EntityEncoder(false, false_meta)#support_r[0]--[2]都是(128,600)
+            support_r = self.EntityEncoder(support, support_meta) #support_r[0]--[2] (5,600)
+            query_r = self.EntityEncoder(query, query_meta)#support_r[0]--[2] (128,600)
+            false_r = self.EntityEncoder(false, false_meta)#support_r[0]--[2] (128,600)
 
             # tail_label = torch.cat((support[:, 0], query[:, 0])).squeeze()
             # contrast_1 = torch.cat((support_r[0], query_r[0]), dim=0)
