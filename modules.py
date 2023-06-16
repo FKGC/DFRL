@@ -32,7 +32,7 @@ class GraphAttentionLayer1(nn.Module):
         """
         inp: input_fea [Batch_size, N, in_features]
         """
-        h = torch.matmul(inp, self.W)  # [batch_size, N, out_features]  h为(10,11,600) W(600,600)
+        h = torch.matmul(inp, self.W)  # [batch_size, N, out_features], h is (10,11,600) W is (600,600)
         N = h.size()[1]  #11
         B = h.size()[0]  # B batch_size 10
 
