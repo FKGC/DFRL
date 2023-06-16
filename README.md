@@ -25,7 +25,7 @@ Note that all these files were provided by xiong and we just select what we need
 All the dataset files and the pre-trained TransE embeddings should be put into the directory ./NELL and ./Wiki, respectively.
 
 # How to run
-The model in our source code is the version based on Bi-LSTM interaction. To achieve the best performance, pls train the models as follows:
+The model in our source code is based on Bi-LSTM interaction. To achieve the best performance, pls train the models as follows:
 
 #### Nell
 
