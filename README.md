@@ -1,4 +1,4 @@
-# DRFL
+# DFRL
 Source code for ISWC2023 paper: Dynamic Relational Learning For Few-Shot Knowledge Graph Completion
 
 Few-shot Knowledge Graph (KG) completion is a focus of current research, where each task aims at querying unseen facts of a relation given few-shot reference entity pairs. 
