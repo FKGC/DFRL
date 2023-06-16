@@ -6,7 +6,7 @@ import torch.nn.init as init
 import math
 from torch.autograd import Variable
 
-class GraphAttentionLayer1(nn.Module):# 改了
+class GraphAttentionLayer1(nn.Module):
     """
     Simple GAT layer, similar to https://arxiv.org/abs/1710.10903
     """
@@ -58,7 +58,7 @@ class GraphAttentionLayer1(nn.Module):# 改了
         else:
             return h_prime
 
-class AttentionSelectContext(nn.Module):  # 改了
+class AttentionSelectContext(nn.Module):  
     def __init__(self, dim, dropout=0.0, BiLSTM_hidden_size = 100, Bilstm_num_layers = 2, 
                  Bilstm_seq_length = 3, BiLSTM_input_size = 100, max_rel = 10, max_tail = 10):
         super(AttentionSelectContext, self).__init__()
@@ -79,17 +79,17 @@ class AttentionSelectContext(nn.Module):  # 改了
         :param mask_left:
         :return:
         """
-        head_left, rel_left, tail_left = left #头实体表示(5,100) 头实体邻居关系表示(5,10,100) 头实体邻居尾实体(5,10,100)
+        head_left, rel_left, tail_left = left # The shape of the head entity embedding is (5,100). The embeddings of neighbor relations are(5,10,100). Its one-hop neighbors are(5,10,100)
         head_right, rel_right, tail_right = right #(5,100) (5,10,100) (5,10,100)
         batch_size = head_left.shape[0] #5
         weak_rel_l = (head_right - head_left).unsqueeze(1)
         weak_rel_r = (head_left - head_right).unsqueeze(1)
 
-        head_left = head_left.unsqueeze(1) #(5,1,100) 头实体表示
-        head_right = head_right.unsqueeze(1) #(5,1,100) 尾实体表示
-        head = torch.cat((head_left, head_right), dim=1) #(5,2,100)
-        head = head.view(-1, 100) #(10,100) 一个头实体再一个尾实体再头尾实体
-        head = torch.repeat_interleave(head, self.num_neighbor + 1, dim=0) #(110,100) 每个重复11次再接下一个
+        head_left = head_left.unsqueeze(1) #(5,1,100) the embeddings of the head entities of adjacent triples.
+        head_right = head_right.unsqueeze(1) #(5,1,100) the embeddings of the tail entities of adjacent triples.
+        head = torch.cat((head_left, head_right), dim=1) #(5,2,100) 
+        head = head.view(-1, 100) #(10,100) 
+        head = torch.repeat_interleave(head, self.num_neighbor + 1, dim=0) #(110,100) 
 
         # tail = torch.cat((head_right, head_left), dim=1)
         # tail = tail.view(-1, 100)
@@ -97,7 +97,7 @@ class AttentionSelectContext(nn.Module):  # 改了
 
         tail_r = torch.cat((head_left, tail_right), dim=1) #(5,11,100)
         tail_l = torch.cat((head_right, tail_left), dim=1)  #(5,11,100)
-        tail = torch.cat((tail_l, tail_r), dim=1).view(-1,100)#(110,100) 前22个为第一个三元组的尾部实体表示
+        tail = torch.cat((tail_l, tail_r), dim=1).view(-1,100)#(110,100)
 
         rel_l = torch.cat((weak_rel_l, rel_left), dim=1)#(5,11,100)
         rel_r = torch.cat((weak_rel_r, rel_right), dim=1)#(5,11,100)
@@ -112,7 +112,7 @@ class AttentionSelectContext(nn.Module):  # 改了
         #h0,c0为(4,110,100)
         out, _ = self.lstm(x, (h0, c0))#x(110,3,100)  h_0(4,110,100)  c_0(4,110,100) 
 
-        out = out.reshape(-1, self.hidden_size * 2 * self.seq_length) #(110,600) seq_length为3 
+        out = out.reshape(-1, self.hidden_size * 2 * self.seq_length) #(110,600) seq_length is 3 
         out = out.reshape(-1, self.num_neighbor + 1, self.hidden_size * 2 * self.seq_length) #num_neighbor为10  #(10,11,600) 
 
         out_att = self.attention(out)#(10,600)
@@ -123,8 +123,8 @@ class AttentionSelectContext(nn.Module):  # 改了
         out_att = out_att.reshape(batch_size, -1, 2 * 3 * self.hidden_size)#(5,2,600)
 
         pos_h = out[:, 0, :]#(5,600)
-        pos_z0 = out_att[:, 0, :]#(5,600) 第一个视角的三元组表示
-        pos_z1 = out_att[:, 1, :]#(5,600) 第二个视角的三元组表示
+        pos_z0 = out_att[:, 0, :]#(5,600) 
+        pos_z1 = out_att[:, 1, :]#(5,600) 
 
         return pos_h, pos_z0, pos_z1
 
